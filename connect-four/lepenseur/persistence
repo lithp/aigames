@@ -1,0 +1,40 @@
+The game is succinctly represented as a list of moves (i.e. [3, 3, 3, 3, 1, ...])
+
+But is best analyzed as a collection of groups.
+
+The board is a big set of potential groups.
+
+The value of a square is the number of groups that said square can reach.
+(So, the first couple middle ones are important because they have the most potential groups.)
+But the weighting quickly changes as enemies remove your groups.
+
+Although, groups don't count if they're occupied by the enemy
+
+The bot can't save scores for a given depth, but it can certainly save calculations. The number of
+groups each square can reach is expensive to calculate but not terribly expensive to store keep.
+There's a big tree of pre-computed positions, including stuff like forced moves and solved wins.
+The tree is pruned as the game progresses and old positions become unreachable.
+
+The Board starts with little information (except maybe a pointer to its parent) and calculates and
+caches everything else on the fly.
+
+You can analyze a position by running through every group. (Presumably you pre-computed all the
+indicies so this part is easy)
+For each group, if it is empty increment a counter for every square in it.
+                if it contains a player increment a counter for that player for every square
+				if it contains two players continue
+So, the value of a square to a player is the number of groups they can make with it.
+
+It would be cool if you could somehow output heatmaps of how valuable each square is.
+You're doing a tree search and keep a priority queue of all leaves. Every time you uncover
+a leaf it changes the weight of all parent nodes, so if you uncover a really good move for black
+it might make your most fruitful node so unimportant you start searching a completely different
+part of the tree.
+All this is saved as the game continues. There's no requirement that all branches are explored to
+an equal depth, so long as you continually update the parents of each leaf you score
+
+Instrument, print out how many positions you have analyzed.
+
+Use zugzwang to your advantage. If you have it, try to leave the columns with an even number of
+players in each so the enemy cannot steal it. Respect the parity of your threats, try to leave
+them an even number of spaces away from the col height so you can use them once you win zugzwang.
